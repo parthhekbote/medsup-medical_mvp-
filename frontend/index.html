@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Supply AIP</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assistant.css">
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="auth.js"></script>
+    <script>
+        // Check authentication on page load
+        if (!requireAuth()) {
+            // Will redirect to login if not authenticated
+        }
+    </script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Left Side Navigation Menu -->
+        <nav id="appMenu" class="app-menu">
+            <div class="menu-header">
+                <button id="menuToggle" class="menu-toggle">☰</button>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item active" data-mode="ops-command" title="Ops Command Center">
+                    <span class="menu-icon">🎯</span>
+                    <span class="menu-label">Ops Command</span>
+                </div>
+                <div class="menu-item" data-mode="inventory-intel" title="Inventory Intelligence">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-label">Inventory</span>
+                </div>
+                <div class="menu-item" data-mode="procurement" title="Procurement & Suppliers">
+                    <span class="menu-icon">🚚</span>
+                    <span class="menu-label">Procurement</span>
+                </div>
+                <div class="menu-item" data-mode="finance" title="Finance & Accounting">
+                    <span class="menu-icon">💰</span>
+                    <span class="menu-label">Finance</span>
+                </div>
+                <div class="menu-item" data-mode="audit" title="Audit & Compliance">
+                    <span class="menu-icon">📋</span>
+                    <span class="menu-label">Audit</span>
+                </div>
+                <div class="menu-item" data-mode="settings" title="System Settings">
+                    <span class="menu-icon">⚙️</span>
+                    <span class="menu-label">Settings</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="content-wrapper">
+            <!-- Ops Command Center View (Default - Existing Dashboard) -->
+            <div id="opsCommandView" class="view active">
+                <header>
+                    <div class="logo">MED<span>OPS</span> AIP</div>
+                    <div class="status-indicator">● System Online</div>
+                </header>
+
+                <!-- Area 1: Command Summary Strip -->
+                <div id="commandStrip" class="command-strip">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Main Content Grid -->
+                <main>
+                    <!-- Row 1 Left: Dashboard -->
+                    <section class="panel dashboard-panel" style="grid-row: 1 / span 2;">
+                        <div class="panel-header">
+                            <h2>Inventory & Risk Status</h2>
+                            <div class="header-actions">
+                                <button class="action-chip" onclick="filterInventory('CRITICAL')"><span class="risk-dot dot-CRITICAL"></span>Critical</button>
+                                <button class="action-chip" onclick="filterInventory('LOW')"><span class="risk-dot dot-WARNING"></span>Low Stock</button>
+                                <button id="refreshBtn" class="icon-btn">↻</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="inventoryTable">
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Stock Level</th>
+                                        <th>Daily Use</th>
+                                        <th>Est. Fail</th>
+                                        <th>Failure Mode</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Side Context Panel (Slide-in) -->
+                        <div id="itemContextPanel" class="context-panel">
+                            <button class="close-context" onclick="closeContextPanel()">×</button>
+                            <h3 id="ctxName">Item Name</h3>
+                            <div class="ctx-metric">
+                                <label>Current Stock</label>
+                                <span id="ctxStock">0</span>
+                            </div>
+                            <div class="ctx-metric">
+                                <label>Departments</label>
+                                <span id="ctxDept">ICU</span>
+                            </div>
+                            <div class="ctx-chart">
+                                <label>7-Day Usage Trend</label>
+                                <div class="sparkline-bar">
+                                    <div class="fill" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <div class="ctx-note">
+                                <label>Latest Note</label>
+                                <p id="ctxNote">No active recommendations.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Row 1 Right: Recommendations -->
+                    <section class="panel recommendations-panel">
+                        <div class="panel-header">
+                            <h2>Pending Actions</h2>
+                            <div class="header-actions">
+                                <button class="action-chip" onclick="filterActions('CRITICAL')"><span class="risk-dot dot-CRITICAL"></span>Critical</button>
+                                <button class="action-chip" onclick="filterActions(null)">↻ All</button>
+                            </div>
+                        </div>
+                        <div id="recommendationsList" class="list-container">
+                            <!-- Cards Populated by JS -->
+                        </div>
+                    </section>
+
+                    <!-- Row 2: Audit Log (Expanded) -->
+
+                    <!-- Row 2 Right: Audit Log -->
+                    <section class="panel audit-panel">
+                        <div class="panel-header">
+                            <h2>Audit Log</h2>
+                        </div>
+                        <div class="table-container">
+                            <table id="auditTable">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>User</th>
+                                        <th>Action</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </main>
+            </div><!-- End Ops Command View -->
+
+            <!-- Other Mode Views (Placeholders) -->
+            <div id="inventoryIntelView" class="view">
+                <header>
+                    <div class="logo">MED<span>OPS</span> AIP</div>
+                    <div class="status-indicator">● Inventory Intelligence</div>
+                </header>
+                <main style="display: block; padding: 2rem;">
+                    <h2>Inventory Intelligence</h2>
+                    <p>Stock analysis...</p>
+                </main>
+            </div>
+            <div id="procurementView" class="view">
+                <header>
+                    <div class="logo">MED<span>OPS</span> AIP</div>
+                    <div class="status-indicator">● Procurement</div>
+                </header>
+                <main style="display: block; padding: 2rem;">
+                    <h2>Procurement</h2>
+                    <p>Supplier management...</p>
+                </main>
+            </div>
+            <div id="financeView" class="view">
+                <header>
+                    <div class="logo">MED<span>OPS</span> AIP</div>
+                    <div class="status-indicator">● Finance</div>
+                </header>
+                <main style="display: block; padding: 2rem;">
+                    <h2>Finance</h2>
+                    <p>Financial dashboard...</p>
+                </main>
+            </div>
+            <div id="auditView" class="view">
+                <header>
+                    <div class="logo">MED<span>OPS</span> AIP</div>
+                    <div class="status-indicator">● Audit</div>
+                </header>
+                <main style="display: flex; padding: 2rem; flex-direction: column; gap: 1rem; height: 100%;">
+                    <h2>Audit & Customer Accounting</h2>
+                    <section class="panel accounting-panel" style="flex: 1; min-height: 0;">
+                        <div class="panel-header">
+                            <h2>Customer Accounting</h2>
+                        </div>
+                        <div style="display: flex; gap: 1rem; padding: 1rem; height: 100%; overflow-y: auto;">
+                            <!-- Forms -->
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 1rem; min-width: 200px;">
+                                <div class="glass-form">
+                                    <h3>Add Customer</h3>
+                                    <input type="text" id="newCustName" placeholder="Name">
+                                    <button onclick="addCustomer()">Add</button>
+                                </div>
+                                <div class="glass-form">
+                                    <h3>Record Transaction</h3>
+                                    <select id="txnCustomer"></select>
+                                    <select id="txnType" onchange="toggleTxnFields()">
+                                        <option value="SALE">SALE</option>
+                                        <option value="PAYMENT">PAYMENT</option>
+                                        <option value="WASTE">SPOILAGE / WASTE</option>
+                                    </select>
+                                    <input type="number" id="txnAmount" placeholder="Amount ($)">
+                                    <input type="number" id="txnCost" placeholder="Cost ($) [Sale Only]">
+                                    <button onclick="addTransaction()">Record</button>
+                                </div>
+                            </div>
+
+                            <!-- Stats -->
+                            <div style="flex: 1.5; display: flex; flex-direction: column; gap: 1rem;">
+                                <div style="display: flex; gap: 1rem;">
+                                    <div class="stat-card">
+                                        <label>Profit</label>
+                                        <div id="totalProfit" class="val positive">$0.00</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <label>Loss</label>
+                                        <div id="totalLoss" class="val negative">$0.00</div>
+                                    </div>
+                                </div>
+                                <div class="table-container">
+                                    <table id="customerTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Customer</th>
+                                                <th>Bal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+            <div id="settingsView" class="view">
+                <header>
+                    <div class="logo">MED<span>OPS</span> AIP</div>
+                    <div class="status-indicator">● Settings</div>
+                </header>
+                <main style="display: block; padding: 2rem;">
+                    <h2>Settings</h2>
+                    <p>Configuration...</p>
+                </main>
+            </div>
+        </div><!-- End content-wrapper -->
+    </div><!-- End app-container -->
+    <script src="app.js"></script>
+    <script src="assistant.js"></script>
+</body>
+
+</html>

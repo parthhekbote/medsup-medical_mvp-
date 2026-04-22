@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDOPS AIP - Secure Access</title>
+    <link rel="stylesheet" href="login.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">MED<span>OPS</span> AIP</div>
+                <p class="subtitle">Hospital Operations Platform</p>
+            </div>
+
+            <div class="security-badge">
+                <span class="badge-icon">🔒</span>
+                <span class="badge-text">Secure Access</span>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" autocomplete="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" autocomplete="current-password" required>
+                </div>
+
+                <div class="form-group-checkbox">
+                    <input type="checkbox" id="secure2fa">
+                    <label for="secure2fa">Enable Secure Mode (2FA)</label>
+                </div>
+
+                <div id="otpSection" class="otp-section" style="display: none;">
+                    <div class="form-group">
+                        <label for="otp">One-Time Password</label>
+                        <input type="text" id="otp" placeholder="000000" maxlength="6">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login">Sign In</button>
+
+                <div id="errorMsg" class="error-message" style="display: none;"></div>
+            </form>
+
+            <div class="login-footer">
+                <p>Demo Credentials:</p>
+                <ul>
+                    <li><strong>ops.manager</strong> / demo123</li>
+                    <li><strong>inventory.staff</strong> / demo123</li>
+                    <li><strong>finance.admin</strong> / demo123</li>
+                    <li><strong>auditor</strong> / demo123</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        document.getElementById('secure2fa').addEventListener('change', (e) => {
+            document.getElementById('otpSection').style.display = e.target.checked ? 'block' : 'none';
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const use2fa = document.getElementById('secure2fa').checked;
+            const otp = document.getElementById('otp').value;
+
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (use2fa && !otp) {
+                errorMsg.textContent = 'Please enter OTP for Secure Mode';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            const user = login(username, password);
+            if (user) {
+                window.location.href = 'index.html';
+            } else {
+                errorMsg.textContent = 'Invalid credentials';
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>
